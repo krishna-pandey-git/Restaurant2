@@ -9,7 +9,7 @@ SQLAlchemy == 0.8.4
 
 ## Installation:
 1. Use GIT bash to run the below command to get a clone of the repository
-git clone https://github.com/krishna-pandey-git/Restaurant2
+"git clone https://github.com/krishna-pandey-git/Restaurant2"
 2. Above command will give you a folder named "Restaurant2" in your current working directory
 
 ## Set Up and Running:
