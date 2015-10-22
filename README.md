@@ -1,4 +1,4 @@
-## tile: Restaurant Menu Application
+## Title: Restaurant Menu Application
 
 ## Introduction:
 This is a web based data driven application that will help create list of restaurants and their corresponding menu items.
@@ -21,11 +21,9 @@ git clone https://github.com/krishna-pandey-git/Restaurant2
 4. you can access the website using below URL
     localhost:5000
     or
-    localhost:5000/restaurants
+    localhost:5000/restaurant
 
 ## Usage:
-This is a Data driven website that can hold restaurants and their menus detail.
-User can : 
 1. Authorized users can create modify and delete restaurant and menu items
 2. Only the creater  of restaurant will be able to modify or delete it
 3. Public user can only view the content
