@@ -8,7 +8,7 @@ import string
 
 # IMPORTS FOR THIS STEP
 from oauth2client.client import flow_from_clientsecrets
-from oauth2client.client import FlowExchangeError
+from oauth2client.client import FlowExchangeError, OAuth2Credentials, Credentials
 import httplib2
 import json
 from flask import make_response
@@ -61,7 +61,6 @@ def showLogin():
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
     # Validate state token
-    print "Inside gconnect"
     if request.args.get('state') != login_session['state']:
         response = make_response(json.dumps('Invalid state parameter.'), 401)
         response.headers['Content-Type'] = 'application/json'
@@ -106,8 +105,9 @@ def gconnect():
         print "Token's client ID does not match app's."
         response.headers['Content-Type'] = 'application/json'
         return response
-
-    stored_credentials = login_session.get('credentials')
+    stored_credentials = None
+    if login_session.get('credentials') is not None:
+        stored_credentials = OAuth2Credentials.from_json(login_session.get('credentials'))
     stored_gplus_id = login_session.get('gplus_id')
     if stored_credentials is not None and gplus_id == stored_gplus_id:
         response = make_response(json.dumps('Current user is already connected.'),
@@ -116,8 +116,10 @@ def gconnect():
         return response
 
     # Store the access token in the session for later use.
-    login_session['credentials'] = credentials
+    
+    login_session['credentials'] = credentials.to_json()
     login_session['gplus_id'] = gplus_id
+    login_session['access_token'] = credentials.access_token
 
     # Get user info
     userinfo_url = "https://www.googleapis.com/oauth2/v1/userinfo"
@@ -149,14 +151,18 @@ def gconnect():
 # method to disconnect user from our application
 @app.route('/gdisconnect')
 def gdisconnect():
-        # Only disconnect a connected user.
+    # Only disconnect a connected user.
     credentials = login_session.get('credentials')
     if credentials is None:
         response = make_response(
             json.dumps('Current user not connected.'), 401)
         response.headers['Content-Type'] = 'application/json'
         return response
-    access_token = credentials.access_token
+    
+    oatuh2credentials = OAuth2Credentials.from_json(credentials)
+    
+    access_token = oatuh2credentials.access_token
+    
     url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % access_token
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
@@ -193,7 +199,6 @@ def restaurantMenuJSON(restaurant_id):
 def menuItemJSON(restaurant_id, menu_id):
     Menu_Item = session.query(MenuItem).filter_by(id=menu_id).one()
     return jsonify(Menu_Item=Menu_Item.serialize)
-
 
 @app.route('/restaurant/JSON')
 def restaurantsJSON():

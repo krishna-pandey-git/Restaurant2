@@ -1,11 +1,8 @@
 import sys
 
 from sqlalchemy import Column, ForeignKey, Integer, String
-
 from sqlalchemy.ext.declarative import declarative_base
-
 from sqlalchemy.orm import relationship
-
 from sqlalchemy import create_engine
 
 Base = declarative_base()
@@ -30,6 +27,7 @@ class Restaurant(Base):
 	user_id = Column(
                 Integer, ForeignKey('user.id'))
 	user = relationship(User)
+        menuitems = relationship("MenuItem", single_parent=True ,cascade='delete, delete-orphan')
 	
 	@property
         def serialize(self):
@@ -54,6 +52,7 @@ class MenuItem(Base):
                 Integer, ForeignKey('user.id'))
 	user = relationship(User)
 	restaurant = relationship(Restaurant)
+	
         @property
         def serialize(self):
         #return object data in easily serializable format
